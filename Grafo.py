@@ -5,6 +5,9 @@
 
 # Grafos
 
+from random import choice
+from random import randint
+
 def swap(vetor, a, b):
     aux = vetor[a]
     vetor[a] = vetor[b]
@@ -39,6 +42,41 @@ class Graph():
     def __init__(self):
         self.nodes = []
         self.path_traveled = []
+
+    def randomize(self, number_of_edges, repeated=True):
+        i = 0
+        n = 0
+        r = []
+        min_v = 1
+        max_v = 2*number_of_edges
+
+        while i < number_of_edges:
+            n = randint(min_v, max_v)
+            if not repeated:
+                while n in r:
+                    n = randint(min_v, max_v)
+            r.append(n)
+            i += 1
+
+        self.createNodes(r)
+        for node in self.nodes:
+            n = randint(0, len(self.nodes))
+            self.randomize_node_adj(node, n)
+
+    # BUG: Um nó pode adicionar ele mesmo como vizinho,
+    #  ainda não sei como isso pode impactar nas buscas
+    def randomize_node_adj(self, node, number_of_adj):
+        i = 0
+        random_adj = []
+        
+        while i < number_of_adj:
+            n = choice(self.nodes)
+            while n in random_adj or n == node.value:
+                n = choice(self.nodes)
+            random_adj.append(n)
+            i += 1
+
+        self.setEdges(node, random_adj)
 
     def addNode(self, value):
         self.nodes.append(Node(value))
@@ -178,3 +216,7 @@ class Graph():
             return False
 
         return True
+
+g = Graph()
+g.randomize(number_of_edges=5, repeated=False)
+g.showAllNodes()
